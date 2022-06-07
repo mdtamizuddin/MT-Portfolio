@@ -1,12 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import auth from '../firebase/firebase.init'
+import auth from '../Firebase/firebase.init'
 import { signOut } from 'firebase/auth'
 import Loading from '../Loading/Loading'
 
 const Dashboard = () => {
-    const [user , loading] = useAuthState(auth)
+    const [user, loading] = useAuthState(auth)
     if (loading) {
         return <Loading />
     }
@@ -16,8 +16,8 @@ const Dashboard = () => {
                 <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
                 <div className="drawer-content relative flex flex-col">
                     <Outlet />
-                    <label  htmlFor="my-drawer-2" className="btn btn-neutral z-50 fixed top-10 left-0 drawer-button lg:hidden">
-                    <i className="fa-solid fa-bars"></i>
+                    <label htmlFor="my-drawer-2" className="btn btn-neutral z-50 fixed top-10 left-0 drawer-button lg:hidden">
+                        <i className="fa-solid fa-bars"></i>
                     </label>
                 </div>
                 <div className="drawer-side shadow">
@@ -42,18 +42,33 @@ export default Dashboard
 
 const Navigations = () => {
     const navigate = useNavigate()
+    const [currentUser, setUser] = useState({ role: 'am-public' })
+    const [user, loading] = useAuthState(auth)
+    useEffect(() => {
+        if (user) {
+            fetch(`https://mt-portfolio2.herokuapp.com/users/${user.email}`)
+                .then(res => res.json())
+                .then(json => setUser(json))
+        }
+    }, [user])
+    if (loading) {
+        return <Loading />
+    }
     return (
         <>
-            <li><Link to='users'>Users</Link></li>
-            <li><Link to='portfolios'>Manage Portfolio</Link></li>
-            <li><Link to='add-portfolio'>Add a Portfolio</Link></li>
+            {
+                currentUser.role === 'admin' &&
+                <>
+                    <li><Link to='all-users'>Users</Link></li>
+                    <li><Link to='Mails'>Messages</Link></li>
+                    <li><Link to='managePortfolio'>Manage Portfolio</Link></li>
+                    <li><Link to='add-portfolio'>Add a Portfolio</Link></li>
+                </>
+            }
             <li><Link to='add-review'>Add a Review</Link></li>
-            <li><Link to='services'>Manage Services</Link></li>
-            <li><Link to='headers'>Headers</Link></li>
-            
-            <li><Link to='pricing/monthly'>Pricing</Link></li>
-            <li><Link to='/' className='btn btn-primary text-white mt-5'>Go Home</Link></li>
-            <li><button onClick={()=>  {
+
+
+            <li className='mt-20'><button onClick={() => {
                 signOut(auth)
                 navigate('/login')
             }} className='btn btn-primary text-white mt-5'>Log Out</button></li>

@@ -5,9 +5,19 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from 'swiper';
 import TestCard from './TestCard';
 import { useAuthState } from 'react-firebase-hooks/auth'
-import auth from '../firebase/firebase.init'
-const Swiperslide = () => {
+import auth from '../Firebase/firebase.init'
+import { useQuery } from 'react-query';
+const Review = () => {
     const [user] = useAuthState(auth)
+    const url = 'https://mt-portfolio2.herokuapp.com/review'
+    const { isLoading, data, refetch } = useQuery(['review'], () =>
+        fetch(url)
+            .then(res => res.json()
+            )
+    )
+    if (isLoading) {
+        return
+    }
     return (
         <div className='container mx-auto p-5 lg-p-0'>
 
@@ -40,24 +50,13 @@ const Swiperslide = () => {
                 modules={[Autoplay]}
                 className="mySwiper"
             >
-                <SwiperSlide>
-                    <TestCard />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <TestCard />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <TestCard />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <TestCard />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <TestCard />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <TestCard />
-                </SwiperSlide>
+                {
+                    data.map(review => <SwiperSlide key={review._id}>
+                        <TestCard review={review}/>
+                    </SwiperSlide>)
+                }
+
+
             </Swiper>
             {
                 !user &&
@@ -68,4 +67,4 @@ const Swiperslide = () => {
     )
 }
 
-export default Swiperslide
+export default Review

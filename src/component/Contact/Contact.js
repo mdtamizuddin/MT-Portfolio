@@ -1,30 +1,36 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-
+import dateNow from '../Hook/useDate'
 
 const Contact = () => {
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit , reset } = useForm();
     const [loading, setLoading] = useState(false)
     const onSubmit = (data) => {
         setLoading(true)
-        fetch('https://linear-graphic.herokuapp.com/sendMail/contact', {
+        fetch('https://mt-portfolio2.herokuapp.com/sendMail/contact', {
             method: "post",
             headers: {
                 'content-type': 'application/json'
             },
-            body: JSON.stringify({ email: data.email, message: data.message, subject: data.subject })
+            body: JSON.stringify({ name: data.name, email: data.email, message: data.message, subject: data.subject })
         }).then(res => {
+            reset()
             if (res.status === 200) {
-                setLoading(false)
-                toast.success('Your Message Send Success')
-            }
-            else {
-                setLoading(false)
-                toast.error('Message Not Sent')
+                fetch('https://mt-portfolio2.herokuapp.com/messages', {
+                    method: "post",
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: data.name, email: data.email, message: data.message, subject: data.subject , date: dateNow() })
+                }).then(res => {
+                    setLoading(false)
+                    if (res.status === 200) {
+                        toast.success('Your Message Send Success')
+                    }
+                })
             }
         }
-
         )
     }
     return (

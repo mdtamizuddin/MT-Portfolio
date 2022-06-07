@@ -2,7 +2,7 @@ import React from 'react'
 import { useQuery } from 'react-query'
 import Loading from '../Loading/Loading'
 const User = () => {
-    const url = 'https://linear-graphic.herokuapp.com/users'
+    const url = 'https://mt-portfolio2.herokuapp.com/users'
     const { isLoading, data, refetch } = useQuery(['users'], () =>
         fetch(url, {
             method: 'get',
@@ -14,7 +14,7 @@ const User = () => {
             )
     )
     const makeAdmin = (email) => {
-        fetch(`https://linear-graphic.herokuapp.com/users/admin/${email}`, {
+        fetch(`https://mt-portfolio2.herokuapp.com/users/admin/${email}`, {
             method: 'put',
             headers: {
                 auth: localStorage.getItem('Token')
@@ -27,7 +27,7 @@ const User = () => {
             })
     }
     const removeAdmin = (email) => {
-        fetch(`https://linear-graphic.herokuapp.com/users/admin-r/${email}`, {
+        fetch(`https://mt-portfolio2.herokuapp.com/users/admin-r/${email}`, {
             method: 'put',
             headers: {
                 auth: localStorage.getItem('Token')

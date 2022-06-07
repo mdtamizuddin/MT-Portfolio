@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import {getAuth} from 'firebase/auth'
+import { getStorage } from "firebase/storage";
 const firebaseConfig = {
   apiKey: "AIzaSyAWMxuMBfehn5LmNlWCgvBhVrb0A95d_Yg",
   authDomain: "portfolio-58719.firebaseapp.com",
@@ -9,8 +9,8 @@ const firebaseConfig = {
   appId: "1:698252240487:web:f21bfb0fbe11704a4716c2"
 };
 
-
 const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app)
-export default auth
+const storage = getStorage(app)
+
+export default storage

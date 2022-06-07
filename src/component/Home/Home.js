@@ -1,7 +1,7 @@
 import React from 'react'
 
 import FooterI from '../Shared/FooterI'
-import Swiperslide from '../Swiper/Swiper'
+import Review from '../Swiper/Review'
 import About from './About'
 import Header from './Header'
 import Portfolio from './Portfolio'
@@ -16,7 +16,7 @@ const Home = () => {
       <Skills />
       <Services />
       <Portfolio />
-      <Swiperslide />
+      <Review />
       <FooterI />
     </div>
   )

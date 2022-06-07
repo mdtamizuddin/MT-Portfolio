@@ -2,7 +2,8 @@ import { Rating } from '@mui/material'
 import React, { useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { toast } from 'react-toastify'
-import auth from '../firebase/firebase.init'
+import auth from '../Firebase/firebase.init'
+import dateNow from '../Hook/useDate'
 import Loading from '../Loading/Loading'
 const AddReview = () => {
     const [value, setValue] = useState(0)
@@ -15,13 +16,13 @@ const AddReview = () => {
         const photoURL = user.photoURL
 
         const description = e.target.description.value
-        fetch('https://linear-graphic.herokuapp.com/review', {
+        fetch('https://mt-portfolio2.herokuapp.com/review', {
             method: 'Post',
             headers: {
                 'content-type': 'application/json',
                 auth: localStorage.getItem('Token')
             },
-            body: JSON.stringify({ name , email , photoURL , description , ratings : value })
+            body: JSON.stringify({ name , email , photoURL , description , ratings : value  , date : dateNow()})
         }).then(res => {
             if (res.status === 200) {
                 toast.success('Review Added')
@@ -57,7 +58,7 @@ const AddReview = () => {
                     }}
                 />
                 <textarea name='description' type="text" placeholder="Type here" className="input input-bordered w-full h-64 mt-5 max-w-full" />
-                <button className='btn btn-secondary mt-5'>Submit Review</button>
+                <button className='btn btn-primary text-white mt-5'>Submit Review</button>
             </form>
         </div>
     )

@@ -1,7 +1,17 @@
 import React from 'react'
+import { useQuery } from 'react-query'
 import CardPortfolio from './CardPortfolio'
 
 const Portfolio = () => {
+    const url = 'https://mt-portfolio2.herokuapp.com/portfolio'
+    const { isLoading, data, refetch } = useQuery(['portfolio'], () =>
+        fetch(url)
+            .then(res => res.json()
+            )
+    )
+    if (isLoading) {
+        return
+    }
     return (
         <div>
             <section className="text-gray-600 body-font">
@@ -11,18 +21,9 @@ const Portfolio = () => {
                         <h1 className="sm:text-3xl lg:text-4xl font-medium title-font  text-gray-900">View some previous Projects</h1>
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <CardPortfolio link={'https://mockuptree.com/wp-content/uploads/edd/2018/12/3d-web-presentation-mock-up-psd.jpg'} image={'https://mockuptree.com/wp-content/uploads/edd/2018/12/3d-web-presentation-mock-up-psd.jpg'} />
-
-                        <CardPortfolio link={'https://mockuptree.com/wp-content/uploads/edd/2018/12/3d-web-presentation-mock-up-psd.jpg'} image={'https://mockuptree.com/wp-content/uploads/edd/2018/12/3d-web-presentation-mock-up-psd.jpg'} />
-
-                        <CardPortfolio link={'https://mockuptree.com/wp-content/uploads/edd/2018/12/3d-web-presentation-mock-up-psd.jpg'} image={'https://mockuptree.com/wp-content/uploads/edd/2018/12/3d-web-presentation-mock-up-psd.jpg'} />
-
-                        <CardPortfolio link={'https://mockuptree.com/wp-content/uploads/edd/2018/12/3d-web-presentation-mock-up-psd.jpg'} image={'https://mockuptree.com/wp-content/uploads/edd/2018/12/3d-web-presentation-mock-up-psd.jpg'} />
-
-                        <CardPortfolio link={'https://mockuptree.com/wp-content/uploads/edd/2018/12/3d-web-presentation-mock-up-psd.jpg'} image={'https://mockuptree.com/wp-content/uploads/edd/2018/12/3d-web-presentation-mock-up-psd.jpg'} />
-
-                        <CardPortfolio link={'https://mockuptree.com/wp-content/uploads/edd/2018/12/3d-web-presentation-mock-up-psd.jpg'} image={'https://mockuptree.com/wp-content/uploads/edd/2018/12/3d-web-presentation-mock-up-psd.jpg'} />
-
+                        {
+                            data.map(portfolio => <CardPortfolio portfolio={portfolio} key={portfolio._id} />)
+                        }
                     </div>
                 </div>
             </section>

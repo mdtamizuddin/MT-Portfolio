@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
+import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Loading from '../Loading/Loading'
 
@@ -8,7 +9,7 @@ const ManagePortfolio = () => {
     const [show, setShow] = useState(false)
     const [upShow, setUpShow] = useState(false)
     const [portfolio, setPortfolio] = useState({})
-    const url = 'https://linear-graphic.herokuapp.com/portfolio'
+    const url = 'https://mt-portfolio2.herokuapp.com/portfolio'
     const { isLoading, data, refetch } = useQuery(['portfolios'], () =>
         fetch(url, {
             method: 'get',
@@ -20,7 +21,7 @@ const ManagePortfolio = () => {
             )
     )
     if (isLoading) {
-        return <Loading />
+        return 
     }
     return (
         <div className='pt-10'>
@@ -33,8 +34,7 @@ const ManagePortfolio = () => {
                             <thead>
                                 <tr>
                                     <th />
-                                    <th>Image</th>
-                                    <th>Name</th>
+                                    <th>Link</th>
                                     <th>Update</th>
                                     <th>Delete</th>
                                 </tr>
@@ -47,12 +47,12 @@ const ManagePortfolio = () => {
                                         <td>
                                             <div className="avatar">
                                                 <div className="w-24 rounded">
-                                                    <img src={port.images[0].image} alt='' />
+                                                    <img src={port.image} alt='' />
                                                 </div>
                                             </div>
 
                                         </td>
-                                        <td>{port.name}</td>
+                                        <td><a target={'_blank'} rel="noreferrer" href={port.link}>{port.link}</a></td>
                                         <td><button onClick={() => {
                                             setUpShow(true)
                                             setPortfolio(port)
@@ -83,7 +83,7 @@ const Modal = ({ show, setShow, portfolio, refetch }) => {
 
     const detetPort = () => {
         const id = portfolio._id
-        fetch(`https://linear-graphic.herokuapp.com/portfolio/${id}`, {
+        fetch(`https://mt-portfolio2.herokuapp.com/portfolio/${id}`, {
             method: "delete",
             headers: {
                 auth: localStorage.getItem('Token')
@@ -126,7 +126,7 @@ const ModalUpdate = ({ upShow, setUpShow, portfolio, refetch }) => {
     const onSubmit = (data) => {
         setLoading(true)
 
-        fetch(`https://linear-graphic.herokuapp.com/portfolio/${portfolio._id}`, {
+        fetch(`https://mt-portfolio2.herokuapp.com/portfolio/${portfolio._id}`, {
             method: 'put',
             headers: {
                 'content-type': 'application/json',
@@ -140,6 +140,9 @@ const ModalUpdate = ({ upShow, setUpShow, portfolio, refetch }) => {
             }
         })
     }
+    if (loading) {
+        return
+    }
     return (
         <div className={`modal-full ${upShow ? 'flex' : 'hidden'}`}>
 
@@ -151,8 +154,32 @@ const ModalUpdate = ({ upShow, setUpShow, portfolio, refetch }) => {
                             <span className="label-text">Name</span>
                         </label>
                         <input
-                            defaultValue={portfolio.name}
+                            defaultValue={portfolio.language}
                             {...register("name", { required: true, value: portfolio.name })}
+                            className="input input-bordered" type='text' />
+                        <p className='text-red-500 mt-2 ml-2'>{errors.name?.type === 'required' && "Name is required"} </p>
+                    </div>
+
+                    {/* Portfolio Link  */}
+
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Link</span>
+                        </label>
+                        <input
+                            defaultValue={portfolio.link}
+                            {...register("lnik", { required: true, value: portfolio.name })}
+                            className="input input-bordered" type='text' />
+                        <p className='text-red-500 mt-2 ml-2'>{errors.name?.type === 'required' && "Name is required"} </p>
+                    </div>
+
+                    {/* portfolio Image  */}
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Image</span>
+                        </label>
+                        <input
+                            {...register("file", { required: true, value: portfolio.name })}
                             className="input input-bordered" type='text' />
                         <p className='text-red-500 mt-2 ml-2'>{errors.name?.type === 'required' && "Name is required"} </p>
                     </div>

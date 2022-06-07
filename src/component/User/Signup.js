@@ -1,11 +1,76 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Social from './Social';
+import auth from '../Firebase/firebase.init'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { toast } from 'react-toastify';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import storage from '../Firebase/firebase.storage';
 
 const Signup = () => {
+    const [loading, setLoading] = useState(false)
+    const [progress, setProgress] = useState(0)
+    const navigate  = useNavigate()
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const onSubmit = data => console.log(data);
+    const onSubmit = data => {
+        setLoading(true)
+        const email = data.email
+        const password = data.password
+        const file = data.file[0]
+        const storageRef = ref(storage, `/file/${file.name}`)
+        const uploadTask = uploadBytesResumable(storageRef, file)
+        uploadTask.on("state_changed", (snapshot) => {
+            const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
+            setProgress(prog)
+        },
+            (err) => console.log(err),
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref)
+                    .then(url => {
+                        createUserWithEmailAndPassword(auth, email, password)
+                            .then((userCredential) => {
+                                const user = userCredential.user;
+                                updateProfile(auth.currentUser, {
+                                    displayName: data.name, photoURL: url
+                                }).then(() => {
+                                    fetch(`https://mt-portfolio2.herokuapp.com/users/${user.email}`, {
+                                        method: "put",
+                                        headers: {
+                                            'content-type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            name: user.displayName, email: user.email,
+                                            photoURL: url
+                                        })
+
+                                    }).then(res => res.json())
+                                        .then(json => {
+                                            setLoading(false)
+                                            localStorage.setItem('Token', json.token)
+                                            navigate('/')
+                                        })
+                                }).catch((error) => {
+
+                                });
+
+
+
+                            })
+                            .catch((error) => {
+                                const errorCode = error.code;
+                                toast.error(errorCode)
+                                setLoading(false)
+                            })
+                    })
+            }
+        )
+
+
+
+
+
+    }
 
     return (
         <div>
@@ -16,22 +81,27 @@ const Signup = () => {
                     <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
                         <div>
                             <label htmlFor="email" className="block text-sm text-gray-800">Name</label>
-                            <input  required  {...register("name", { required: true })}  type="text" className="block w-full px-4 py-2 mt-2 text-primary bg-white border rounded-md focus:border-primary focus:ring-primary focus:outline-none focus:ring focus:ring-opacity-40" />
+                            <input required  {...register("name", { required: true })} type="text" className="block w-full px-4 py-2 mt-2 text-primary bg-white border rounded-md focus:border-primary focus:ring-primary focus:outline-none focus:ring focus:ring-opacity-40" />
                         </div>
                         <div className='mt-5'>
                             <label htmlFor="email" className="block text-sm text-gray-800">Email</label>
-                            <input  required  {...register("email", { required: true })}  type="email" className="block w-full px-4 py-2 mt-2 text-primary bg-white border rounded-md focus:border-primary focus:ring-primary focus:outline-none focus:ring focus:ring-opacity-40" />
+                            <input required  {...register("email", { required: true })} type="email" className="block w-full px-4 py-2 mt-2 text-primary bg-white border rounded-md focus:border-primary focus:ring-primary focus:outline-none focus:ring focus:ring-opacity-40" />
                         </div>
                         <div className="mt-4">
                             <div>
                                 <label htmlFor="password" className="block text-sm text-gray-800">Password</label>
-                                <input  required  {...register("password", { required: true })}
-                                type="password" className="block w-full px-4 py-2 mt-2 text-primary bg-white border rounded-md focus:border-primary focus:ring-primary focus:outline-none focus:ring focus:ring-opacity-40" />
+                                <input required  {...register("password", { required: true })}
+                                    type="password" className="block w-full px-4 py-2 mt-2 text-primary bg-white border rounded-md focus:border-primary focus:ring-primary focus:outline-none focus:ring focus:ring-opacity-40" />
                             </div>
-                            <a href="#" className="text-xs text-gray-600 hover:underline">Forget Password?</a>
+                            <div className='mt-3'>
+                                <label htmlFor="file" className="block text-sm text-gray-800">Avater</label>
+                                <input required  {...register("file", { required: true })}
+                                    type="file" className="block w-full px-4 py-2 mt-2 text-primary bg-white border rounded-md focus:border-primary focus:ring-primary focus:outline-none focus:ring focus:ring-opacity-40" />
+                            </div>
+                            <Link to={'/'} className="text-xs text-gray-600 hover:underline">Forget Password?</Link>
                             <div className="mt-6">
-                                <button className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-primary rounded-md ">
-                                    Login
+                                <button className={`${loading && 'loading'} btn btn-primary text-white btn-md w-full rounded-md`}>
+                                    Sign up
                                 </button>
                             </div>
                             <p className="mt-8 text-xs font-light text-center text-gray-700"> You have an account? <Link to={'/login'} className="font-medium text-primary hover:underline">Login</Link></p>
