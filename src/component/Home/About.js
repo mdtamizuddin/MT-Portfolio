@@ -1,4 +1,5 @@
 import React from 'react'
+import { AnimationWrapper } from 'react-hover-animation'
 import about from './about.png'
 
 const About = () => {
@@ -21,11 +22,19 @@ const About = () => {
                             <li className='mt-2'>Brilliant mixing of quality and performance.</li>
                             <li className='mt-2'>Greate Color combinations.</li>
                         </ul>
-                            <button className="mt-8 btn btn-accent hover:text-primary
+                        <button className="mt-8 btn btn-accent hover:text-primary
                             hover:bg-base-100 bg-base-100 border ">Get In Tuch</button>
                     </div>
                     <div className="lg:max-w-xl  lg:w-full md:w-1/2 w-lg">
-                        <img className="object-cover  w-full object-center rounded" alt="hero" src={about} />
+                        <AnimationWrapper style={{
+                            opacity: {
+                                initial: 0.9,
+                                onHover: 1,
+                            }
+                        }}
+                        >
+                            <img className="object-cover  w-full object-center rounded" alt="hero" src={about} />
+                        </AnimationWrapper>
                     </div>
                 </div>
             </section>

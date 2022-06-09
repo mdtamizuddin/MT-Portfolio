@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { BrowserRouter } from 'react-router-dom';
+import 'animate.css';
 import {
   QueryClient,
   QueryClientProvider,
