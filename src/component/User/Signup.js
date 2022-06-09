@@ -11,14 +11,16 @@ import storage from '../Firebase/firebase.storage';
 const Signup = () => {
     const [loading, setLoading] = useState(false)
     const [progress, setProgress] = useState(0)
+    console.log(progress)
     const navigate  = useNavigate()
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit } = useForm();
     const onSubmit = data => {
         setLoading(true)
         const email = data.email
         const password = data.password
         const file = data.file[0]
-        const storageRef = ref(storage, `/file/${file.name}`)
+        const fileName = Math.random().toString(36).replace(/[^a-z]+/g, 'user').substr(0, 50)
+        const storageRef = ref(storage, `/file/${fileName}-${file.name}`)
         const uploadTask = uploadBytesResumable(storageRef, file)
         uploadTask.on("state_changed", (snapshot) => {
             const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)

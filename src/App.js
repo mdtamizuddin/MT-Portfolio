@@ -30,7 +30,11 @@ function App() {
     if (user) {
       fetch(`https://mt-portfolio2.herokuapp.com/users/${user.email}`)
         .then(res => res.json())
-        .then(json => setUser(json))
+        .then(json => {
+          if (json.role) {
+            setUser(json)
+          }
+        })
     }
   }, [user])
   if (loading) {
@@ -47,8 +51,9 @@ function App() {
         <Route path='/swiper' element={<Review />} />
 
         <Route path='/dashboard' element={<Dahboard />} >
+
           {
-            currentUser.role === "admin" &&
+            currentUser?.role === "admin" &&
             <>
               <Route path='add-portfolio' element={<AddPortfolio />} />
               <Route path='all-users' element={<User />} />

@@ -6,9 +6,6 @@ import reportWebVitals from './reportWebVitals';
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { BrowserRouter } from 'react-router-dom';
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
   QueryClient,
   QueryClientProvider,
 } from 'react-query'

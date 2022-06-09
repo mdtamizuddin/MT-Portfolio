@@ -1,9 +1,7 @@
 import { Rating } from '@mui/material';
 import React, { useState } from 'react'
-import useDate from '../Hook/useDate'
 const TestCard = ({review}) => {
-    const [value, setValue] = useState(3)
-    const dateNow = useDate()
+    const [setValue] = useState(3)
     return (
         <div >
             <div className="card w-full  h-80 border bg-base-100 shadow-xl">

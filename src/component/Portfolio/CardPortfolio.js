@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CardPortfolio = ({portfolio}) => {
+const CardPortfolio = ({ portfolio }) => {
     return (
         <div>
             <div style={{ backgroundImage: `url(${portfolio?.image})`, backgroundRepeat: 'no-repeat', backgroundSize: 'contain', backgroundPosition: "center" }} className="card h-96  card-compact w-full bg-base-100 shadow-xl relative">
@@ -10,9 +10,25 @@ const CardPortfolio = ({portfolio}) => {
                             Language : {portfolio?.details.language}
                         </p>
                         <p className='text-center w-full font-bold text-white'>
-                            Css PremWork : {portfolio?.details.fremwork}
+                            Css / Css PremWork : {portfolio?.details.fremwork}
                         </p>
-                        <a href={portfolio?.link} rel="noreferrer" target={'_blank'} className="btn btn-primary btn-sm mt-5 opacity-100 text-white">Visit Website</a>
+                        {
+                            portfolio?.details.admin &&
+
+                            <>
+                            <p className='text-center text-lg text-white'>Admin : {portfolio?.details.admin}</p>
+                            <p className='text-center w-full text-lg text-white'>Pass : {portfolio?.details.pass}</p>
+                            </>
+                        }
+                        <div className="code flex justify-center w-full mt-2">
+                            <a href={portfolio?.links.client} rel="noreferrer" target={'_blank'} className="btn-sm btn text-sm text-white btn-success">Code Client</a>
+
+                            {
+                                portfolio?.links.server &&
+                                <a href={portfolio?.links.server} rel="noreferrer" target={'_blank'} className="btn-sm btn ml-3 text-sm text-white btn-success">Code Server</a>
+                            }
+                        </div>
+                        <a href={portfolio?.links.live} rel="noreferrer" target={'_blank'} className="btn btn-primary btn-sm mt-5 opacity-100 text-white">Visit Website</a>
                     </div>
                 </div>
             </div>

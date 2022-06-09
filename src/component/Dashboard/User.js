@@ -21,7 +21,7 @@ const User = () => {
             }
         })
             .then(res => {
-                if (res.status === 200 ) {
+                if (res.status === 200) {
                     refetch()
                 }
             })
@@ -34,7 +34,20 @@ const User = () => {
             }
         })
             .then(res => {
-                if (res.status === 200 ) {
+                if (res.status === 200) {
+                    refetch()
+                }
+            })
+    }
+    const deleteUser = (id) => {
+        fetch(`https://mt-portfolio2.herokuapp.com/users/${id}`, {
+            method: 'delete',
+            headers: {
+                auth: localStorage.getItem('Token')
+            }
+        })
+            .then(res => {
+                if (res.status === 200) {
                     refetch()
                 }
             })
@@ -67,7 +80,7 @@ const User = () => {
                                     <td>{index + 1}</td>
                                     <div className="avatar">
                                         <div className="w-24 rounded">
-                                            <img src={user.photoURL} alt=''/>
+                                            <img src={user.photoURL} alt='' />
                                         </div>
                                     </div>
                                     <td>{user.name}</td>
@@ -88,7 +101,7 @@ const User = () => {
                                                     onClick={() => removeAdmin(user.email)}
                                                     className='btn  w-full btn-primary'>remove</button>
                                                 :
-                                                <button className='btn btn-error w-full'>Delete</button>
+                                                <button className='btn btn-error w-full' onClick={()=> deleteUser(user._id)}>Delete</button>
                                         }
 
                                     </td>

@@ -10,7 +10,7 @@ import { useQuery } from 'react-query';
 const Review = () => {
     const [user] = useAuthState(auth)
     const url = 'https://mt-portfolio2.herokuapp.com/review'
-    const { isLoading, data, refetch } = useQuery(['review'], () =>
+    const { isLoading, data } = useQuery(['review'], () =>
         fetch(url)
             .then(res => res.json()
             )

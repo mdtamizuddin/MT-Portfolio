@@ -16,7 +16,7 @@ const AddPortfolio = () => {
         }
         const link = data.link
         const file = data.file[0]
-        const fileName = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 50)
+        const fileName = Math.random().toString(36).replace(/[^a-z]+/g, 'portfolio').substr(0, 50)
         const storageRef = ref(storage, `/file/${fileName}-${file.name}`)
         const uploadTask = uploadBytesResumable(storageRef, file)
         uploadTask.on("state_changed", (snapshot) => {

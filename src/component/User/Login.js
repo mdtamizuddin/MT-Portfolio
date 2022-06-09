@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 const Login = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit } = useForm();
     const onSubmit = data => {
         setLoading(true)
         const email = data.email

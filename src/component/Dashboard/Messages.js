@@ -1,10 +1,11 @@
 import React from 'react'
 import { useQuery } from 'react-query'
+import { toast } from 'react-toastify'
 import Loading from '../Loading/Loading'
 
 const Messages = () => {
     const url = 'https://mt-portfolio2.herokuapp.com/messages'
-    const { isLoading, data } = useQuery(['messages'], () =>
+    const { isLoading, data , refetch} = useQuery(['messages'], () =>
         fetch(url, {
             method: 'get',
             headers: {
@@ -14,6 +15,20 @@ const Messages = () => {
             .then(res => res.json()
             )
     )
+    const deleteMessage = (id) => {
+        fetch(`https://mt-portfolio2.herokuapp.com/messages/${id}`,{
+            method: "delete",
+            headers:{
+                auth : localStorage.getItem('Token')
+            }
+        }).then(res => {
+            if (res.status === 200) {
+                toast.success('Message Deleted')
+                refetch()
+            }
+        })
+    }
+
     if (isLoading) {
         return <Loading />
     }
@@ -22,8 +37,10 @@ const Messages = () => {
             <h1 className='text-4xl text-center mt-4'>All Messages</h1>
             <div className='flex flex-col-reverse'>
                 {
-                    data.map(message => <div key={message._id}>
+                    data.map(message => <div className='relative' key={message._id}>
+
                         <section className="text-gray-600 body-font overflow-hidden">
+                            <button className='btn btn-error btn-sm absolute right-0 mr-20' onClick={()=> deleteMessage(message._id)}>Delete</button>
                             <div className="container px-5 py-14 mx-auto">
                                 <div className="-my-8 divide-y-2 divide-gray-100">
                                     <div className="py-8 flex flex-wrap md:flex-nowrap">

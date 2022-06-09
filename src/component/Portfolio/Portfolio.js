@@ -4,7 +4,7 @@ import CardPortfolio from './CardPortfolio'
 
 const Portfolio = () => {
     const url = 'https://mt-portfolio2.herokuapp.com/portfolio'
-    const { isLoading, data, refetch } = useQuery(['portfolio'], () =>
+    const { isLoading, data } = useQuery(['portfolio'], () =>
         fetch(url)
             .then(res => res.json()
             )

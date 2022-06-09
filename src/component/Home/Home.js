@@ -11,8 +11,12 @@ import Skills from './Skills'
 const Home = () => {
   return (
     <div>
+      <div id='header'>
       <Header />
-      <About />
+      </div>
+     <div className='#about'>
+     <About />
+     </div>
       <Skills />
       <Services />
       <Portfolio />

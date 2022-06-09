@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import mern from './header.png'
 const Header = () => {
 
@@ -17,9 +18,10 @@ const Header = () => {
 
                         </p>
                         <div className="flex justify-end">
-                            <button className="btn animate-bounce btn-primary text-white px-5">Hire me</button>
-                            <button className="btn btn-accent hover:text-primary
-                            hover:bg-base-100 bg-base-100 border ml-5">View My Portfolios</button>
+                            <Link to={'/contact'} title='Click To Go Contact Page' className="btn animate-bounce btn-primary text-white px-5">Hire me</Link>
+                            <a href='https://github.com/mdtamizuddin/others/raw/main/Md%20Tamiz%20Uddin%20Resume.pdf'
+                            target={'_blank'} rel="noreferrer" className="btn btn-accent hover:text-primary
+                            hover:bg-base-100 bg-base-100 border ml-5">Download Resume</a>
                         </div>
                     </div>
                     <div className="lg:max-w-xl  lg:w-full md:w-1/2 w-lg">

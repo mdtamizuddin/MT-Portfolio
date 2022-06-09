@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
-import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import Loading from '../Loading/Loading'
-
+import storage from '../Firebase/firebase.storage';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 const ManagePortfolio = () => {
     const [show, setShow] = useState(false)
     const [upShow, setUpShow] = useState(false)
@@ -21,7 +20,7 @@ const ManagePortfolio = () => {
             )
     )
     if (isLoading) {
-        return 
+        return
     }
     return (
         <div className='pt-10'>
@@ -72,7 +71,10 @@ const ManagePortfolio = () => {
                 }
             </div>
             <Modal show={show} setShow={setShow} portfolio={portfolio} refetch={refetch} />
-            <ModalUpdate portfolio={portfolio} refetch={refetch} upShow={upShow} setUpShow={setUpShow} />
+            {
+                upShow &&
+                <ModalUpdate portfolio={portfolio} refetch={refetch} upShow={upShow} setUpShow={setUpShow} />
+            }
         </div>
     )
 }
@@ -122,66 +124,61 @@ const Modal = ({ show, setShow, portfolio, refetch }) => {
 
 const ModalUpdate = ({ upShow, setUpShow, portfolio, refetch }) => {
     const [loading, setLoading] = useState(false)
-    const { register, formState: { errors }, handleSubmit } = useForm();
+    const { register, handleSubmit } = useForm();
+    console.log(upShow)
     const onSubmit = (data) => {
         setLoading(true)
-
-        fetch(`https://mt-portfolio2.herokuapp.com/portfolio/${portfolio._id}`, {
-            method: 'put',
-            headers: {
-                'content-type': 'application/json',
-                auth: localStorage.getItem('Token')
+        const file = data.file[0]
+        if (file) {
+            const fileName = Math.random().toString(36).replace(/[^a-z]+/g, 'portfolio').substr(0, 50)
+            const storageRef = ref(storage, `/file/${fileName}-${file.name}`)
+            const uploadTask = uploadBytesResumable(storageRef, file)
+            uploadTask.on("state_changed", (snapshot) => {
+                const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
+                console.log(prog);
             },
-            body: JSON.stringify({ name: data.name })
-        }).then(res => {
-            if (res.status === 200) {
-                setUpShow(false)
-                refetch()
-            }
-        })
+                (err) => console.log(err),
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref)
+                        .then(url => {
+                            fetch(`https://mt-portfolio2.herokuapp.com/portfolio/${portfolio._id}`, {
+                                method: 'put',
+                                headers: {
+                                    'content-type': 'application/json',
+                                    auth: localStorage.getItem('Token')
+                                },
+                                body: JSON.stringify({ image: url })
+                            }).then(res => {
+                                if (res.status === 200) {
+                                    setUpShow(false)
+                                    refetch()
+                                }
+                            })
+                        }
+                        )
+                }
+
+            )
+        }
+
     }
     if (loading) {
         return
     }
     return (
-        <div className={`modal-full ${upShow ? 'flex' : 'hidden'}`}>
+        <div className={`modal-full z-50 ${upShow ? 'flex' : 'hidden'}`}>
 
             <div className="flex flex-col max-w-md gap-2 p-6 rounded-md shadow-md dark:bg-gray-900 dark:text-gray-100 relative">
-                <button onClick={()=> setUpShow(false)} className='btn btn-error btn-sm absolute right-0 top-0'>close</button>
+                <button onClick={() => setUpShow(false)} className='btn btn-error btn-sm absolute right-0 top-0'>close</button>
                 <form onSubmit={handleSubmit(onSubmit)} className="card-body lg:w-96">
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Name</span>
-                        </label>
-                        <input
-                            defaultValue={portfolio.language}
-                            {...register("name", { required: true, value: portfolio.name })}
-                            className="input input-bordered" type='text' />
-                        <p className='text-red-500 mt-2 ml-2'>{errors.name?.type === 'required' && "Name is required"} </p>
-                    </div>
-
-                    {/* Portfolio Link  */}
-
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Link</span>
-                        </label>
-                        <input
-                            defaultValue={portfolio.link}
-                            {...register("lnik", { required: true, value: portfolio.name })}
-                            className="input input-bordered" type='text' />
-                        <p className='text-red-500 mt-2 ml-2'>{errors.name?.type === 'required' && "Name is required"} </p>
-                    </div>
-
                     {/* portfolio Image  */}
                     <div className="form-control">
                         <label className="label">
                             <span className="label-text">Image</span>
                         </label>
                         <input
-                            {...register("file", { required: true, value: portfolio.name })}
-                            className="input input-bordered" type='text' />
-                        <p className='text-red-500 mt-2 ml-2'>{errors.name?.type === 'required' && "Name is required"} </p>
+                            {...register("file", { required: false })}
+                            className="input input-bordered p-2" type='file' />
                     </div>
                     <button type='submit' className='btn btn-secondary'>Update</button>
                 </form>
